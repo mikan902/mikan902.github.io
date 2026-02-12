@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理者ダッシュボード - 松家 蓮</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f5f7fa;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .user-email {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .btn-logout {
+            padding: 10px 20px;
+            background: #f44336;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background 0.3s ease;
+        }
+
+        .btn-logout:hover {
+            background: #d32f2f;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .card-icon {
+            font-size: 32px;
+        }
+
+        .card-title {
+            font-size: 18px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .card-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 8px;
+        }
+
+        .card-description {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .welcome-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 16px;
+            padding: 40px;
+            margin-bottom: 40px;
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+        }
+
+        .welcome-section h2 {
+            font-size: 32px;
+            margin-bottom: 12px;
+        }
+
+        .welcome-section p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-top: 24px;
+        }
+
+        .action-btn {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .action-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .section {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .section-title {
+            font-size: 20px;
+            color: #333;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .activity-item {
+            padding: 16px;
+            border-left: 3px solid #667eea;
+            background: #f8f9ff;
+            margin-bottom: 12px;
+            border-radius: 8px;
+        }
+
+        .activity-time {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 4px;
+        }
+
+        .activity-text {
+            color: #333;
+            font-size: 14px;
+        }
+
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header-content {
+                flex-direction: column;
+                gap: 16px;
+                text-align: center;
+            }
+
+            .welcome-section {
+                padding: 24px;
+            }
+
+            .welcome-section h2 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="loadingScreen" class="loading-screen">
+        <div class="spinner"></div>
+    </div>
+
+    <header class="header">
+        <div class="header-content">
+            <h1>
+                <span>📊</span>
+                管理者ダッシュボード
+            </h1>
+            <div class="user-info">
+                <span class="user-email" id="userEmail">読み込み中...</span>
+                <button class="btn-logout" id="logoutBtn">ログアウト</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="welcome-section">
+            <h2>ようこそ、<span id="welcomeName">管理者</span>さん！</h2>
+            <p>松家 蓮のウェブサイト管理画面へようこそ。</p>
+            
+            <div class="quick-actions">
+                <button class="action-btn" onclick="location.href='https://mikan902.github.io/'">
+                    🏠 サイトを見る
+                </button>
+                <button class="action-btn" onclick="alert('この機能は開発中です')">
+                    ✏️ コンテンツ編集
+                </button>
+                <button class="action-btn" onclick="alert('この機能は開発中です')">
+                    ⚙️ 設定
+                </button>
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-icon">👥</span>
+                    <h3 class="card-title">総訪問者数</h3>
+                </div>
+                <div class="card-value">1,234</div>
+                <p class="card-description">今月の訪問者数</p>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-icon">📄</span>
+                    <h3 class="card-title">ページ数</h3>
+                </div>
+                <div class="card-value">5</div>
+                <p class="card-description">公開中のページ</p>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-icon">⭐</span>
+                    <h3 class="card-title">ステータス</h3>
+                </div>
+                <div class="card-value" style="font-size: 24px;">正常稼働中</div>
+                <p class="card-description">すべてのシステムが正常です</p>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-icon">🔐</span>
+                    <h3 class="card-title">セキュリティ</h3>
+                </div>
+                <div class="card-value" style="font-size: 24px;">保護済み</div>
+                <p class="card-description">認証システム有効</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3 class="section-title">📌 最近のアクティビティ</h3>
+            <div class="activity-item">
+                <div class="activity-time">2026年2月12日 14:38</div>
+                <div class="activity-text">管理者ログインシステムが有効化されました</div>
+            </div>
+            <div class="activity-item">
+                <div class="activity-time">2026年2月12日 14:30</div>
+                <div class="activity-text">Supabase認証が設定されました</div>
+            </div>
+            <div class="activity-item">
+                <div class="activity-time">2026年2月12日 14:00</div>
+                <div class="activity-text">ダッシュボードページが作成されました</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // Supabase設定
+        const SUPABASE_URL = 'https://yjfcbnwfcgcxekintjih.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlqZmNibndmY2djeGVraW50amloIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzk0MDkzMTAsImV4cCI6MjA1NDk4NTMxMH0.YpzJ9kzqYDPLFUwEDPbj1wkQfXLQjj1vCZAGJmgWJu0';
+
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        const loadingScreen = document.getElementById('loadingScreen');
+        const userEmailEl = document.getElementById('userEmail');
+        const welcomeNameEl = document.getElementById('welcomeName');
+        const logoutBtn = document.getElementById('logoutBtn');
+
+        // 認証チェック
+        async function checkAuth() {
+            try {
+                const { data: { session } } = await supabase.auth.getSession();
+                
+                if (!session) {
+                    // ログインしていない場合はログインページへリダイレクト
+                    window.location.href = 'admin-login.html';
+                    return;
+                }
+
+                // ユーザー情報を表示
+                const user = session.user;
+                userEmailEl.textContent = user.email;
+                welcomeNameEl.textContent = user.email.split('@')[0];
+
+                // ローディング画面を非表示
+                loadingScreen.style.display = 'none';
+
+            } catch (error) {
+                console.error('認証エラー:', error);
+                window.location.href = 'admin-login.html';
+            }
+        }
+
+        // ログアウト処理
+        logoutBtn.addEventListener('click', async () => {
+            try {
+                const { error } = await supabase.auth.signOut();
+                if (error) throw error;
+                
+                window.location.href = 'admin-login.html';
+            } catch (error) {
+                console.error('ログアウトエラー:', error);
+                alert('ログアウトに失敗しました');
+            }
+        });
+
+        // ページロード時に認証チェック
+        window.addEventListener('load', checkAuth);
+
+        // セッション変更の監視
+        supabase.auth.onAuthStateChange((event, session) => {
+            if (event === 'SIGNED_OUT') {
+                window.location.href = 'admin-login.html';
+            }
+        });
+    </script>
+</body>
+</html>
