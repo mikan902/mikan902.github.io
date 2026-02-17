@@ -40,6 +40,44 @@
   </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
+  <script>
+  const supabaseUrl = "https://kmcuzdsnuhajeixhzvu.supabase.co";
+  const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlqZmNibndmY2djeGVraW50amloIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA4NTIyMDYsImV4cCI6MjA4NjQyODIwNn0.AdALyk2o6ZCzOLqoJHD879XqBNp1Z3DVLSy1EMwK0uk";
+  const { createClient } = supabase;
+  const client = createClient(supabaseUrl, supabaseKey);
+
+  async function loadWords() {
+    const { data, error } = await client
+      .from("words")
+      .select("*")
+      .order("no", { ascending: true });
+
+    if (error) {
+      document.getElementById("stats").innerText = "エラー発生";
+      return;
+    }
+
+    document.getElementById("stats").innerHTML =
+      `登録単語数: <b>${data.length}</b>`;
+
+    const list = document.getElementById("word-list");
+    list.innerHTML = "";
+
+    data.forEach(word => {
+      const card = `
+        <div class="word-card">
+          <div class="no">No.${word.no}</div>
+          <div class="en">${word.en}</div>
+          <div class="ja">${word.ja ?? ""}</div>
+        </div>
+      `;
+      list.innerHTML += card;
+    });
+  }
+
+  loadWords();
+</script>
+
 <body>
   <header class="header">
     <h1>📚 英単語帳（完全版）</h1>
