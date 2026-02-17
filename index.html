@@ -1,99 +1,51 @@
-<!DOCTYPE html>
+
+  <!DOCTYPE html>
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>英単語帳（完全版）</title>
-  <style>
-    *{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',Meiryo,sans-serif}
-    body{background:#f5f5f5;color:#222;line-height:1.6}
-    .header{background:#fff;padding:1rem 2rem;box-shadow:0 2px 8px rgba(0,0,0,.08);display:flex;justify-content:space-between;align-items:center}
-    .header h1{font-size:1.5rem;color:#333}
-    .btn{padding:.6rem 1.2rem;border:none;border-radius:6px;cursor:pointer;font-size:.9rem;transition:.2s}
-    .btn-secondary{background:#555;color:#fff}
-    .btn-secondary:hover{background:#333}
-    .btn-primary{background:#007bff;color:#fff}
-    .btn-primary:hover{background:#0056b3}
-    .container{max-width:1280px;margin:2rem auto;padding:0 1rem}
-    .stats{background:#fff;padding:1rem;border-radius:8px;margin-bottom:1.5rem;box-shadow:0 2px 4px rgba(0,0,0,.05)}
-    .stats b{color:#007bff;font-size:1.2rem}
-    
-    /* 4列グリッド（横並び4単語） */
-    .word-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:1rem}
-    .word-card{background:#fff;border:1px solid #e0e0e0;border-radius:10px;padding:14px;box-shadow:0 2px 6px rgba(0,0,0,.06);transition:.2s}
-    .word-card:hover{box-shadow:0 4px 12px rgba(0,0,0,.12)}
-    .word-card .no{font-size:.7rem;color:#999;margin-bottom:6px;text-transform:uppercase}
-    .word-card .en{font-weight:700;font-size:1.15rem;color:#111;margin-bottom:6px}
-    .word-card .ja{font-size:1rem;color:#444;margin-bottom:8px}
-    .word-card .ex{font-size:.85rem;color:#666;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    
-    @media(max-width:1000px){.word-grid{grid-template-columns:repeat(3,1fr)}}
-    @media(max-width:720px){.word-grid{grid-template-columns:repeat(2,1fr)}}
-    @media(max-width:480px){.word-grid{grid-template-columns:1fr}}
-    
-    #admin-panel{background:#fff;padding:1.5rem;border-radius:10px;margin-top:2rem;box-shadow:0 2px 8px rgba(0,0,0,.08)}
-    #admin-panel h2{margin-bottom:1rem;color:#333}
-    .form-row{display:flex;gap:12px;margin-bottom:12px}
-    input,textarea{width:100%;padding:.7rem;border:1px solid #ccc;border-radius:6px;font-size:.95rem}
-    textarea{resize:vertical;min-height:80px}
-    .empty{text-align:center;color:#999;padding:3rem;font-size:1.1rem}
-  </style>
+  <title>ログインページ</title>
+
+  <!-- Supabase CDN -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
-  <body>
-  const supabaseUrl = "https://kmcuzdsnuhajeixhzvu.supabase.co";
-  const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlqZmNibndmY2djeGVraW50amloIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA4NTIyMDYsImV4cCI6MjA4NjQyODIwNn0.AdALyk2o6ZCzOLqoJHD879XqBNp1Z3DVLSy1EMwK0uk";
-  const { createClient } = supabase;
-  const client = createClient(supabaseUrl, supabaseKey);
-
-  async function loadWords() {
-    const { data, error } = await client
-      .from("words")
-      .select("*")
-      .order("no", { ascending: true });
-
-    if (error) {
-      document.getElementById("stats").innerText = "エラー発生";
-      return;
-    }
-
-    document.getElementById("stats").innerHTML =
-      `登録単語数: <b>${data.length}</b>`;
-
-    const list = document.getElementById("word-list");
-    list.innerHTML = "";
-
-    data.forEach(word => {
-      const card = `
-        <div class="word-card">
-          <div class="no">No.${word.no}</div>
-          <div class="en">${word.en}</div>
-          <div class="ja">${word.ja ?? ""}</div>
-        </div>
-      `;
-      list.innerHTML += card;
-    });
-  }
-
-  loadWords();
-</script>
 
 <body>
-  <header class="header">
-    <h1>📚 英単語帳（完全版）</h1>
-    <div>
-      <button id="login-btn" class="btn btn-secondary">管理者ログイン（Google）</button>
-      <button id="logout-btn" class="btn btn-secondary" style="display:none">ログアウト</button>
-    </div>
-  </header>
 
-  <main class="container">
-    <div class="stats" id="stats">読み込み中…</div>
-    <div id="word-list" class="word-grid"><p class="empty">読み込み中…</p></div>
+  <h2>ログイン</h2>
 
-    <section id="admin-panel" style="display:none">
-      <h2>✏️ 単語追加（管理者専用）</h2>
-      <div class="form-row">
-        <input type="number" id="no" placeholder="番号（例: 1）" required>
-        <input type="text" id="en" placeholder="英単語（例: example）" required>
-      </div>
+  <input type="email" id="email" value="liansongjia7@gmail.com" placeholder="メールアドレス">
+  <br><br>
+  <input type="password" id="password" placeholder="パスワード">
+  <br><br>
+  <button onclick="login()">ログイン</button>
+
+  <p id="message"></p>
+
+  <script>
+    const supabaseUrl = "https://kmcuzdsnuhajeixhzvu.supabase.co";
+    const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlqZmNibndmY2djeGVraW50amloIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA4NTIyMDYsImV4cCI6MjA4NjQyODIwNn0.AdALyk2o6ZCzOLqoJHD879XqBNp1Z3DVLSy1EMwK0uk";
+
+
+    const { createClient } = supabase;
+    const supabaseClient = createClient(supabaseUrl, supabaseKey);
+
+    async function login() {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+
+      const { data, error } = await supabaseClient.auth.signInWithPassword({
+        email: email,
+        password: password
+      });
+
+      if (error) {
+        document.getElementById("message").innerText = "ログイン失敗：" + error.message;
+      } else {
+        document.getElementById("message").innerText = "ログイン成功！";
+        console.log(data);
+      }
+    }
+  </script>
+
+</body>
+</html>
