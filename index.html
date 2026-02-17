@@ -1,22 +1,21 @@
-
-  <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
   <title>ログインページ</title>
-
-  <!-- Supabase CDN -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 
 <body>
 
-  <h2>ログイン</h2>
+  <h2>アカウント登録 / ログイン</h2>
 
   <input type="email" id="email" value="liansongjia7@gmail.com" placeholder="メールアドレス">
   <br><br>
   <input type="password" id="password" placeholder="パスワード">
   <br><br>
+
+  <button onclick="signup()">新規登録</button>
   <button onclick="login()">ログイン</button>
 
   <p id="message"></p>
@@ -25,9 +24,24 @@
     const supabaseUrl = "https://kmcuzdsnuhajeixhzvu.supabase.co";
     const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlqZmNibndmY2djeGVraW50amloIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA4NTIyMDYsImV4cCI6MjA4NjQyODIwNn0.AdALyk2o6ZCzOLqoJHD879XqBNp1Z3DVLSy1EMwK0uk";
 
-
     const { createClient } = supabase;
     const supabaseClient = createClient(supabaseUrl, supabaseKey);
+
+    async function signup() {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+
+      const { data, error } = await supabaseClient.auth.signUp({
+        email: email,
+        password: password
+      });
+
+      if (error) {
+        document.getElementById("message").innerText = "登録失敗：" + error.message;
+      } else {
+        document.getElementById("message").innerText = "登録成功！メール確認して！";
+      }
+    }
 
     async function login() {
       const email = document.getElementById("email").value;
@@ -42,10 +56,10 @@
         document.getElementById("message").innerText = "ログイン失敗：" + error.message;
       } else {
         document.getElementById("message").innerText = "ログイン成功！";
-        console.log(data);
       }
     }
   </script>
 
 </body>
 </html>
+
